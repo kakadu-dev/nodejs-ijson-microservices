@@ -1,0 +1,15 @@
+node_modules
+
+.DS_Store
+
+ idea
+.idea/*
+!.gitignore
+!.idea/runConfigurations/
+!.idea/inspectionProfiles/
+!.idea/codeStyles/
+!.idea/encodings.xml
+!.idea/sqldialects.xml
+!.idea/misc.xml
+!.idea/webResources.xml
+!.idea/yii2settings.xml

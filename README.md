@@ -1,0 +1,68 @@
+# NodeJS Inverted JSON Microservices
+
+ - Gateway entrypoint
+ - Microservice worker 
+
+Example gateway:
+```js
+const cors        = require('cors');
+const { Gateway } = require('@kakadu-dev/nodejs-ijson-microservices');
+
+const IS_DEVELOPMENT = true;
+
+const app = Gateway.create({
+	name:  'Project API',
+	ijson: process.env.IJSON_HOST,
+	port:  process.env.PORT,
+	env:   'develoment',
+}, gateway => {
+	const express = gateway.app;
+
+	// Preflight request
+	express.use(cors());
+
+	// express.use(MyAuthentication(gateway));
+	// express.use(MyAuthorization(gateway));
+}, gateway => {
+	const express = gateway.app;
+
+	// express.use(MySpecificErrorHandler());
+}, IS_DEVELOPMENT);
+
+app.addInfoRoute();
+
+app.addService('my-service');
+
+app.start();
+```
+
+Example microservice:
+```js
+const { Microservice } = require('@kakadu-dev/nodejs-ijson-microservices');
+
+const IS_DEVELOPMENT = true;
+
+const app = Microservice.create('my-service', {
+	ijson: process.env.IJSON_HOST,
+	env:   'development',
+}, IS_DEVELOPMENT);
+
+const method = () => {
+    return {hello: 'world'};
+};
+
+app.addEndpoint('test-method', method);
+
+app.start();
+```
+
+and run POST request to: http://localhost:3000
+```json
+{
+  "id": 1,
+  "method": "my-service.test-method",
+  "params": {
+    "test": 1
+  }
+}
+```
