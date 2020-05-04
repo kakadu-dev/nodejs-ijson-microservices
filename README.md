@@ -56,6 +56,18 @@ app.addEndpoint('test-method', method);
 app.start();
 ```
 
+Start Inverted JSON:
+```
+version: '3.7'
+
+services:
+  ijson:
+    image: lega911/ijson
+    container_name: base-ijson
+    ports:
+      - 8001:8001
+```
+
 and run POST request to: http://localhost:3000
 ```json
 {
