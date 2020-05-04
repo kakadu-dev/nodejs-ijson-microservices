@@ -1,5 +1,7 @@
 # NodeJS Inverted JSON Microservices
 
+![Node.js Package](https://github.com/kakadu-dev/nodejs-ijson-microservices/workflows/Node.js%20Package/badge.svg)
+
  - Gateway entrypoint
  - Microservice worker 
 
