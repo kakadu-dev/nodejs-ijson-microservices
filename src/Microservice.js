@@ -307,6 +307,7 @@ class Microservice
 
 						response.result = await handler(params, { app: this, request });
 					} catch (e) {
+						console.info(e.stack);
 						response.error = new MicroserviceException({
 							message: `Endpoint exception (${data.method}): ${e.message}`,
 							status:  2,
