@@ -104,7 +104,7 @@ class Gateway
 			instance.app.use(mung.json((body, req, res) => {
 				instance.logDriver(() => `<-- Response (${body?.id ?? req?.body?.id ?? 0}): ` +
 										 `${body ? JSON.stringify(body) : 'empty (async?)'}.`, 1, req.body?.id ?? 0);
-			}));
+			}, { mungError: true }));
 			/** END LOG REQUEST **/
 
 			beforeRoute(instance);
