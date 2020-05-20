@@ -90,6 +90,8 @@ class Gateway
 									 logDriver ? logDriver : () => null
 								 );
 
+			instance.app.disable('x-powered-by');
+
 			// Set middleware for json request
 			instance.app.use(bodyParser.urlencoded({ extended: true }));
 			instance.app.use(bodyParser.json());
