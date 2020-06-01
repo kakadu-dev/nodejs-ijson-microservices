@@ -19,6 +19,11 @@ class BaseException extends Error
 	service;
 
 	/**
+	 * @type {null|Object}
+	 */
+	payload;
+
+	/**
 	 * @constructor
 	 *
 	 * @param {Object} props
@@ -32,6 +37,7 @@ class BaseException extends Error
 		this.status  = props.status || d.status;
 		this.service = props.service || d.service;
 		this.message = props.message || d.message;
+		this.payload = props.payload || null;
 	}
 
 	/**
@@ -68,6 +74,7 @@ class BaseException extends Error
 			status:  this.status,
 			service: this.service,
 			message: this.message,
+			...(this.payload ? {payload: this.payload} : {})
 		};
 	}
 }

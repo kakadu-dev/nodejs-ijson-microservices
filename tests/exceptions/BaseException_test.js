@@ -15,6 +15,18 @@ describe('Test BaseException', () => {
 		assert.deepEqual(exception.toJSON(), defaults);
 	});
 
+	it('should return payload', () => {
+		const payload   = { hello: 'world' };
+		const exception = new BaseException({
+			payload,
+		});
+
+		assert.deepEqual(exception.toJSON(), {
+			...defaults,
+			payload,
+		});
+	});
+
 	it('should works methods', () => {
 		const args      = {
 			code:    1,

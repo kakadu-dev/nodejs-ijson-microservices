@@ -310,7 +310,9 @@ class Microservice
 						console.info(e.stack);
 						response.error = new MicroserviceException({
 							message: `Endpoint exception (${data.method}): ${e.message}`,
-							status:  2,
+							code:    e?.code ?? null,
+							status:  e?.status ?? 2,
+							payload: e?.payload ?? null,
 						});
 					}
 				} else {

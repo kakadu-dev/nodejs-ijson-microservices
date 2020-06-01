@@ -1,6 +1,6 @@
 {
 	"name": "@kakadu-dev/nodejs-ijson-microservices",
-	"version": "1.0.2",
+	"version": "1.1.0",
 	"description": "Package for create microservice architecture based on NodeJS. ",
 	"keywords": [
 		"node",
