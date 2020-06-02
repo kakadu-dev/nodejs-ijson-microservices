@@ -195,6 +195,17 @@ class Gateway
 	}
 
 	/**
+	 * Remove all microservices endpoints handlers
+	 *
+	 * @return {Gateway}
+	 */
+	removeAllServices() {
+		this.services = {};
+
+		return this;
+	}
+
+	/**
 	 * Service request handler
 	 *
 	 * @param {e.Request} req
