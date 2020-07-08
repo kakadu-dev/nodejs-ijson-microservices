@@ -93,8 +93,8 @@ class Gateway
 			instance.app.disable('x-powered-by');
 
 			// Set middleware for json request
-			instance.app.use(bodyParser.urlencoded({ extended: true }));
-			instance.app.use(bodyParser.json());
+			instance.app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+			instance.app.use(bodyParser.json({ limit: '50mb', extended: true }));
 
 			/** LOG REQUEST **/
 			instance.app.post('*', (req, res, next) => {
