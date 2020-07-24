@@ -15,6 +15,7 @@ const ErrorHandler = env => {
 			status:  err.status || err.statusCode || INTERNAL_SERVER_ERROR,
 			code:    err.code,
 			message: err.message,
+			service: err?.service ?? req?.service ?? undefined,
 		};
 
 		if (error.status < BAD_REQUEST) {
@@ -25,7 +26,6 @@ const ErrorHandler = env => {
 			error.stack   = err.stack;
 			error.name    = statuses.message[error.status];
 			error.type    = err.type;
-			error.service = err.service;
 		}
 
 		res.json(new MjResponse({ id: req?.body?.id, error }));
