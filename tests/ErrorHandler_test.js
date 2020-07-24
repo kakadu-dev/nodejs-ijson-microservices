@@ -52,6 +52,7 @@ describe('Test ErrorHandler', () => {
 				status:  error.status,
 				code:    error.code,
 				message: error.message,
+				service: error.service,
 			},
 		});
 	});
