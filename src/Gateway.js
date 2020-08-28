@@ -41,12 +41,16 @@ class Gateway
 	 * @private
 	 */
 	options = {
-		name:     'Microservice Gateway',
-		version:  '1.0.0', // Gateway version
-		env:      'development',
-		endpoint: '/', // Gateway listen endpoint
-		port:     3000, // Gateway port
-		ijson:    'http://localhost:8001', // Inverted JSON host + port
+		name:          'Microservice Gateway',
+		version:       '1.0.0', // Gateway version
+		env:           'development',
+		endpoint:      '/', // Gateway listen endpoint
+		port:          3000, // Gateway port
+		ijson:         'http://localhost:8001', // Inverted JSON host + port
+		requestParams: {
+			timeout: 1000 * 15, // 15 seconds
+		},
+		serviceParams: {},
 	};
 
 	/**
@@ -221,7 +225,7 @@ class Gateway
 			// Set correct sender
 			_.set(req, 'body.params.payload.sender', 'Gateway');
 
-			response = (await this.sendClientRequest(service, req, method, false)).data;
+			response = (await this.sendClientRequest(service, req, method, false, this.options.serviceParams)).data;
 		} catch (e) {
 			const exception = {
 				message: `${e.message} (${service})`,
@@ -247,10 +251,11 @@ class Gateway
 	 * @param {e.Request} req
 	 * @param {string} method
 	 * @param {boolean} autoGenerateId
+	 * @param {Object} reqParams
 	 *
 	 * @return {Promise.<Object>}
 	 */
-	sendClientRequest(name, req, method, autoGenerateId = true) {
+	sendClientRequest(name, req, method, autoGenerateId = true, reqParams = {}) {
 		const params = _.merge({
 			...(autoGenerateId ? { id: uuidv4() } : {}),
 			params: {
@@ -261,12 +266,11 @@ class Gateway
 			method,
 		});
 
-		return axios.post(`${this.options.ijson}/${name}`, new MjRequest(params), {
+		return axios.post(`${this.options.ijson}/${name}`, new MjRequest(params), _.merge(this.options.requestParams, {
 			headers: {
 				...(req?.headers?.type ? { type: req.headers.type } : {}),
 			},
-			timeout: 1000 * 60 * 3, // 3 min
-		});
+		}, reqParams));
 	}
 
 	/**
