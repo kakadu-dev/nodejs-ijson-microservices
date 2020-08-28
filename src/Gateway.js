@@ -105,10 +105,12 @@ class Gateway
 				instance.logDriver(() => `--> Request (${req.body?.id ?? 0}) ` +
 										 `from ${req?.body?.params?.payload?.sender ?? 'Client'}: ` +
 										 `${JSON.stringify(req.body)}`, 0, req.body?.id ?? 0);
+				req.time = Date.now();
 				next();
 			});
 			instance.app.use(mung.json((body, req, res) => {
-				instance.logDriver(() => `<-- Response (${body?.id ?? req?.body?.id ?? 0}): ` +
+				const reqTime = Date.now() - req?.time ?? 0;
+				instance.logDriver(() => `<-- Response (${body?.id ?? req?.body?.id ?? 0}) ${reqTime} ms: ` +
 										 `${body ? JSON.stringify(body) : 'empty (async?)'}.`, 1, req.body?.id ?? 0);
 			}, { mungError: true }));
 			/** END LOG REQUEST **/

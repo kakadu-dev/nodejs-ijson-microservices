@@ -167,6 +167,7 @@ class Microservice
 		}));
 
 		let response = {};
+		const time = Date.now();
 
 		try {
 			this.logDriver(() => `    --> Request (${service} - ${request.getId()}): ${JSON.stringify(request)}`, 2, request.getId());
@@ -202,7 +203,8 @@ class Microservice
 
 			throw new MicroserviceException(exception);
 		} finally {
-			this.logDriver(() => `    <-- Response (${service} - ${request.getId()}): ` +
+			const reqTime = Date.now() - time;
+			this.logDriver(() => `    <-- Response (${service} - ${request.getId()}) ${reqTime} ms: ` +
 								 `${response ? JSON.stringify(response) : 'empty (async?)'}.`, 3, request.getId());
 		}
 	}
@@ -228,6 +230,18 @@ class Microservice
 	}
 
 	/**
+	 * Get request time
+	 *
+	 * @param {Object} req
+	 *
+	 * @return {number}
+	 * @private
+	 */
+	_getReqTime = req => {
+		return Date.now() - req?.time;
+	}
+
+	/**
 	 * Get client request
 	 *
 	 * @param {boolean} isFirstTask
@@ -250,9 +264,10 @@ class Microservice
 				},
 			});
 
-			this.logDriver(() => `--> Request (${resp?.data?.id ?? 0}) ` +
-								 `from ${resp?.data?.params?.payload?.sender ?? 'Client'}: ` +
+			this.logDriver(() => `--> Request (${resp?.data?.id ?? 0})` +
+								 ` from ${resp?.data?.params?.payload?.sender ?? 'Client'}: ` +
 								 `${JSON.stringify(resp.data)}`, 0, resp?.data?.id ?? 0);
+			resp.time = Date.now();
 
 			return resp;
 		} catch (e) {
@@ -286,7 +301,8 @@ class Microservice
 		request = await this.handleClientRequest();
 
 		if (request instanceof MicroserviceException) {
-			this.logDriver(() => `<-- Response (${request?.data?.id ?? 0}): ${JSON.stringify(request)}`, 1, request?.data?.id ?? 0);
+			this.logDriver(() => `<-- Response (${request?.data?.id ?? 0}) ${this._getReqTime(request)} ms: ` +
+								 `${JSON.stringify(request)}`, 1, request?.data?.id ?? 0);
 			throw new Error(request.message);
 		}
 
@@ -325,7 +341,8 @@ class Microservice
 
 			const rsp = new MjResponse(response);
 
-			this.logDriver(() => `<-- Response (${rsp.getId() ?? 0}): ${JSON.stringify(rsp)}`, 1, rsp.getId());
+			this.logDriver(() => `<-- Response (${rsp.getId() ?? 0}) ${this._getReqTime(request)} ms: ` +
+								 `${JSON.stringify(rsp)}`, 1, rsp.getId());
 
 			request = await this.handleClientRequest(false, new MjResponse(rsp));
 		}
