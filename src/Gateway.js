@@ -265,12 +265,13 @@ class Gateway
 			...req.body,
 			method,
 		});
-
-		return axios.post(`${this.options.ijson}/${name}`, new MjRequest(params), _.merge(this.options.requestParams, {
+		const config = _.merge({ ...this.options.requestParams }, {
 			headers: {
 				...(req?.headers?.type ? { type: req.headers.type } : {}),
 			},
-		}, reqParams));
+		}, reqParams);
+
+		return axios.post(`${this.options.ijson}/${name}`, new MjRequest(params), config);
 	}
 
 	/**
