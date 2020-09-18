@@ -3,6 +3,7 @@ const ConsoleLogDriver = require('./ConsoleLogDriver');
 const MjRequest        = require('./MjRequest');
 const MjResponse       = require('./MjResponse');
 const ErrorHandler     = require('./ErrorHandler');
+const ExpandSrv        = require('./helpers/ExpandSrv');
 const express          = require('express');
 const mung             = require('express-mung');
 const { v4: uuidv4 }   = require('uuid');
@@ -297,7 +298,12 @@ class Gateway
 					  || (({ name, port, version, env }) => console.info(`${name} gateway started on: ` +
 																		 `${port} port. Version: ${version} (${env})`));
 
-		this.app.listen(this.options.port, () => clbck(this.options));
+		ExpandSrv(this.options.ijson)
+			.then(ijsonHost => {
+				this.options.ijson = ijsonHost;
+				this.app.listen(this.options.port, () => clbck(this.options));
+			})
+			.catch(console.error);
 	}
 }
 

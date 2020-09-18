@@ -2,6 +2,7 @@ const MicroserviceException = require('./exceptions/MicroserviceException');
 const ConsoleLogDriver      = require('./ConsoleLogDriver');
 const MjRequest             = require('./MjRequest');
 const MjResponse            = require('./MjResponse');
+const ExpandSrv             = require('./helpers/ExpandSrv');
 const axios                 = require('axios');
 const http                  = require('http');
 const { v4: uuidv4 }        = require('uuid');
@@ -167,7 +168,7 @@ class Microservice
 		}));
 
 		let response = {};
-		const time = Date.now();
+		const time   = Date.now();
 
 		try {
 			this.logDriver(() => `    --> Request (${service} - ${request.getId()}): ${JSON.stringify(request)}`, 2, request.getId());
@@ -239,7 +240,7 @@ class Microservice
 	 */
 	_getReqTime = req => {
 		return Date.now() - req?.time;
-	}
+	};
 
 	/**
 	 * Get client request
@@ -293,6 +294,7 @@ class Microservice
 					  || (({ version, env }) => console.info(`${this.name} microservice started. ` +
 															 `Version: ${version} (${env})`));
 
+		this.options.ijson = await ExpandSrv(this.options.ijson);
 		clbck(this.options);
 
 		let request;
