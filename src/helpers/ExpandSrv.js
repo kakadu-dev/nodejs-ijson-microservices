@@ -16,7 +16,7 @@ const main = host => {
 	return new Promise((resolve, reject) => {
 		const [protocol, domain] = host.split('://')
 
-		dns.resolveSrv(domain, (err, addresses) => {
+		dns.resolveSrv(domain.replace('.srv', ''), (err, addresses) => {
 			if (err) {
 				return reject(err);
 			}
