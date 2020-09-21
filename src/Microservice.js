@@ -38,6 +38,11 @@ class Microservice
 	};
 
 	/**
+	 * @type {boolean} srv ijson expanded
+	 */
+	srvExpand = false;
+
+	/**
 	 * @type {Object}
 	 *
 	 * @private
@@ -145,6 +150,20 @@ class Microservice
 	}
 
 	/**
+	 * Get ijson host
+	 *
+	 * @return {Promise<string>}
+	 */
+	async getIjsonHost() {
+		if (!this.srvExpand) {
+			this.options.ijson = await ExpandSrv(this.options.ijson);
+			this.srvExpand     = true;
+		}
+
+		return this.options.ijson;
+	}
+
+	/**
 	 * Send request to service
 	 *
 	 * @param {string} method
@@ -167,13 +186,14 @@ class Microservice
 			},
 		}));
 
-		let response = {};
-		const time   = Date.now();
+		let response   = {};
+		const time     = Date.now();
+		const jsonHost = await this.getIjsonHost();
 
 		try {
 			this.logDriver(() => `    --> Request (${service} - ${request.getId()}): ${JSON.stringify(request)}`, 2, request.getId());
 
-			response = (await axios.post(`${this.options.ijson}/${service}`, request, {
+			response = (await axios.post(`${jsonHost}/${service}`, request, {
 				timeout: this.options.requestTimeout,
 				...requestConfig,
 			})).data;
@@ -256,7 +276,7 @@ class Microservice
 		try {
 			const resp = await axios.request({
 				url:       isFirstTask ? `/${this.name}` : null,
-				baseURL:   this.options.ijson,
+				baseURL:   await this.getIjsonHost(),
 				method:    'post',
 				data:      response,
 				httpAgent: this.httpAgent,
@@ -294,7 +314,6 @@ class Microservice
 					  || (({ version, env }) => console.info(`${this.name} microservice started. ` +
 															 `Version: ${version} (${env})`));
 
-		this.options.ijson = await ExpandSrv(this.options.ijson);
 		clbck(this.options);
 
 		let request;

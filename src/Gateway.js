@@ -55,6 +55,11 @@ class Gateway
 	};
 
 	/**
+	 * @type {boolean} srv ijson expanded
+	 */
+	srvExpand = false;
+
+	/**
 	 * @type {function(msg: string)}
 	 *
 	 * @private
@@ -140,6 +145,20 @@ class Gateway
 	 */
 	static getInstance() {
 		return this.myInstance;
+	}
+
+	/**
+	 * Get ijson host
+	 *
+	 * @return {Promise<string>}
+	 */
+	async getIjsonHost() {
+		if (!this.srvExpand) {
+			this.options.ijson = await ExpandSrv(this.options.ijson);
+			this.srvExpand     = true;
+		}
+
+		return this.options.ijson;
 	}
 
 	/**
@@ -274,7 +293,8 @@ class Gateway
 			},
 		}, reqParams);
 
-		return axios.post(`${this.options.ijson}/${name}`, new MjRequest(params), config);
+		return this.getIjsonHost()
+				   .then(ijsonHost => axios.post(`${ijsonHost}/${name}`, new MjRequest(params), config));
 	}
 
 	/**
@@ -298,9 +318,8 @@ class Gateway
 					  || (({ name, port, version, env }) => console.info(`${name} gateway started on: ` +
 																		 `${port} port. Version: ${version} (${env})`));
 
-		ExpandSrv(this.options.ijson)
-			.then(ijsonHost => {
-				this.options.ijson = ijsonHost;
+		this.getIjsonHost()
+			.then(() => {
 				this.app.listen(this.options.port, () => clbck(this.options));
 			})
 			.catch(console.error);
