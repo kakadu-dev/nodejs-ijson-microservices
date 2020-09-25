@@ -162,6 +162,26 @@ class Gateway
 	}
 
 	/**
+	 * Register process exit callback
+	 *
+	 * @param {function} callback
+	 *
+	 * @return {undefined}
+	 */
+	onExit = callback => {
+		['exit', 'SIGINT', 'SIGUSR1', 'SIGUSR2', 'uncaughtException', 'SIGTERM'].forEach(eventType => {
+			process.on(eventType, async evtOrExitCodeOrError => {
+				try {
+					await callback()
+				} catch (e) {
+					console.error('On exit error: ', e);
+				}
+				process.exit(isNaN(+evtOrExitCodeOrError) ? 1 : +evtOrExitCodeOrError);
+			});
+		});
+	}
+
+	/**
 	 * Handle gateway request
 	 *
 	 * @param {e.Request} req
