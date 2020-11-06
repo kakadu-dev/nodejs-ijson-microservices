@@ -14,7 +14,9 @@ const main = host => {
 	}
 
 	return new Promise((resolve, reject) => {
-		const [protocol, domain] = host.split('://')
+		const result   = host.split('://');
+		const protocol = result?.[1]?.length > 0 ? `${result[0]}://` : '';
+		const domain   = protocol.length > 0 ? result[1] : result[0];
 
 		dns.resolveSrv(domain.replace(/.srv$/, ''), (err, addresses) => {
 			if (err) {
@@ -25,7 +27,7 @@ const main = host => {
 			const ijsonHost = sortedAddresses?.[0]?.name ?? null;
 			const ijsonPort = sortedAddresses?.[0]?.port ?? null;
 
-			return resolve(`${protocol}://${ijsonHost}:${ijsonPort}`);
+			return resolve(`${protocol}${ijsonHost}:${ijsonPort}`);
 		});
 	});
 };
