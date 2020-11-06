@@ -4,6 +4,7 @@ const MjRequest        = require('./src/MjRequest');
 const MjResponse       = require('./src/MjResponse');
 const ConsoleLogDriver = require('./src/ConsoleLogDriver');
 const exceptions       = require('./src/exceptions');
+const ExpandSrv        = require('./src/helpers/ExpandSrv');
 
 module.exports = {
 	Gateway,
@@ -12,4 +13,5 @@ module.exports = {
 	MjResponse,
 	ConsoleLogDriver,
 	exceptions,
+	ExpandSrv,
 };
